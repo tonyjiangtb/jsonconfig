@@ -20,10 +20,12 @@ public class App {
 		JSONFilter filter=new JSONFilter();
 		CheckPermission chk= new CheckPermissionImpl();
 		JSONObject objstart=(JSONObject) jsonParser.parse(reader);
+		JSONObject objstart2=(JSONObject) objstart.clone();//bing meiyou luanyong
 		filter.Start(objstart ,chk);
 
 		//System.out.println(filter.GetJSONDestination().toJSONString());
 		System.out.println(objstart.toJSONString());
+		System.out.println(objstart2.toJSONString());
 		//;
 	}
 

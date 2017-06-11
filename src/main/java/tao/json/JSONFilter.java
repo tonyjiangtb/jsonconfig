@@ -5,6 +5,8 @@ import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import javax.lang.model.element.UnknownElementException;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -45,10 +47,33 @@ public class JSONFilter {
 						objDest.put(key, index.getData().get(key));
 					} else {
 						JSONArray array = (JSONArray) index.getData().get(key);
-						Iterator<JSONObject> arrayit = array.iterator();
-						while (arrayit.hasNext()) {
-							JSONObject2 arrayobj = new JSONObject2(currentPath, arrayit.next());
-							queue.addLast(arrayobj);
+						//String name =array.iterator().getClass().getSimpleName();
+						Iterator<Object> arrayIterator = array.iterator();
+						while (arrayIterator.hasNext()) {
+							Object obj=arrayIterator.next();
+							//System.out.println("array"+obj.getClass().getSimpleName());
+							switch(obj.getClass().getSimpleName()){
+							case "String":
+							case "Long":
+								//obviously no path defined for the array
+								arrayIterator.remove();
+								continue;
+							case "JSONArray":
+								// do not support 2 layer nested array
+								arrayIterator.remove();
+								
+								//JSONObject2 arrayobj = new JSONObject2(currentPath, (JSONObject)obj);
+								//queue.addLast(arrayobj);
+								continue;
+							case "JSONObject":
+								JSONObject2 arrayobj = new JSONObject2(currentPath, (JSONObject)obj);
+								queue.addLast(arrayobj);
+								break;
+							default:
+								//unknown case
+								//throw new UnknownElementException();
+							}
+							
 						}
 					}
 					break;
